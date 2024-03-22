@@ -14,24 +14,33 @@ async function addNote(title) {
 
   notes.push(note);
 
-  await fs.writeFile(notesPath, JSON.stringify(notes));
+  await saveNotes(notes);
   console.log(chalk.bgGreen("Note was added!"));
 }
 
 async function removeNote(id) {
   const notes = await getNotes();
-  const notesCopy = [...notes];
 
-  for (let i = 0; i < notesCopy.length; i++) {
-    if (notesCopy[i].id === String(id)) {
-      notesCopy.splice(i, 1);
+  // один из вариантов удаление через splice
+  // const notesCopy = [...notes];
+  // for (let i = 0; i < notesCopy.length; i++) {
+  //   if (notesCopy[i].id === id) {
+  //     notesCopy.splice(i, 1);
+  //     break;
+  //   }
+  // }
+  // await saveNotes(notesCopy);
 
-      break;
-    }
-  }
+  // один из вариантов удаление через filter
+  const notesFiltered = notes.filter((note) => note.id !== id);
 
-  await fs.writeFile(notesPath, JSON.stringify(notesCopy));
-  console.log(chalk.bgRed("Note was removed!"));
+  await saveNotes(notesFiltered);
+
+  console.log(chalk.bgRed(`Note with id="${id}" has been removed!`));
+}
+
+async function saveNotes(notes) {
+  await fs.writeFile(notesPath, JSON.stringify(notes));
 }
 
 async function getNotes() {
